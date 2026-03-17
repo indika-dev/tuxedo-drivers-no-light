@@ -10,76 +10,73 @@
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
 Release:        0%{?dist}
-Summary:        Tuxedo drivers not enabling light on touchpad
+Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
-URL:            https://github.com/tuxedocomputers/tuxedo-drivers
-Source0:        https://github.com/tuxedocomputers/%{modname}/archive/refs/tags/v%{version}.tar.gz#/%{modname}-%{version}.tar.gz
+URL:            https://gitlab.com/tuxedocomputers/development/packages/%{modname}
 
-Provides:       tuxedo-drivers = %{version}
+Source:         %{url}/-/archive/v%{version}/tuxedo-drivers-v%{version}.tar.gz
 
-BuildRequires:  kmodtool systemd-rpm-macros
+BuildRequires: kmodtool
+BuildRequires: kernel-devel
+BuildRequires: make
+BuildRequires: gcc
 
-# if built locally, this will fail
-# percent_sign{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
+Provides: tuxedo-drivers = %{version}
+Obsoletes: tuxedo-drivers < 4.0.0
+
+%description
+Tuxedo drivers as kmod
 
 %{expand:%(kmodtool --target %{_target_cpu} --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null) }
 
-%description
-Tuxedo kernel Modules user package
-
 %prep
-# print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null
-# error out if there was something wrong with kmodtool
-%{?kmodtool_check}
-
+echo "Prepare stage -----------------------------------------------------------------------------------------------"
 %setup -q -c -T -a 0
-# %autosetup -C
 
-# curl -LO https://github.com/tuxedocomputers/%{modname}/archive/refs/tags/v%{version}.tar.gz
-# tar xzf v%{version}.tar.gz --strip-components=1
-
-for kernel_version in %{?kernel_versions}; do
-  mkdir -p _kmod_build_${kernel_version%%___*}
-  cp -a tuxedo-drivers-%{version} _kmod_build_${kernel_version%%___*}
+for kernel_version  in %{?kernel_versions} ; do
+  cp -a src _kmod_build_${kernel_version%%___*}
 done
 
 %build
+echo "Build stage -----------------------------------------------------------------------------------------------"
+
 for kernel_version in %{?kernel_versions}; do
-  pushd _kmod_build_${kernel_version%%___*}/%{name}-%{version}
-    make -j1 -C "${kernel_version##*___}" M=${PWD}/_kmod_build_${kernel_version%%___*} modules
-    # percent_sign{make_build} KERNELDIR="${kernel_version##*___}" modules
-  popd
+  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} modules
 done
 
 %install
+echo "Install stage ---------------------------------------------------------------------------------------------"
+
 for kernel_version in %{?kernel_versions}; do
-    make -C "${kernel_version##*___}" M=${PWD}/_kmod_build_${kernel_version%%___*}/src INSTALL_MOD_PATH=${RPM_BUILD_ROOT} INSTALL_MOD_DIR=%{kmodinstdir_postfix} modules_install
+  mkdir -p %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
+  install -D -m 755 _kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
+  install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
+  chmod a+x %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/*.ko
 done
 
-install -D -m 644 tuxedo_keyboard.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/modprobe.d/tuxedo_keyboard.conf
-install -D -m 644 99-z-tuxedo-systemd-fix.rules ${RPM_BUILD_ROOT}%{_sysconfdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
+# Copy configs
+mkdir -p %{buildroot}/usr/lib/modprobe.d/
+
+# Copy udev rules
+mkdir -p %{buildroot}/usr/lib/udev/rules.d/
+ls -al
+cp %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}/usr/lib/udev/rules.d/
+cp %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}/usr/lib/udev/rules.d/
+
+# Copy udev hwdb
+mkdir -p %{buildroot}/usr/lib/udev/hwdb.d/
+cp %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.d/
+cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.d/
+
 %{?akmod_install}
 
-# is this needed?
-# install -p -m 0755 -d %{buildroot}%{_modprobedir}/
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files
-%{_sysconfdir}/modprobe.d/tuxedo_keyboard.conf
-%{_sysconfdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
+/usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
+/usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
+/usr/lib/udev/hwdb.d/61-sensor-tuxedo.hwdb
+/usr/lib/udev/hwdb.d/61-keyboard-tuxedo.hwdb
+# %doc README.md
+# %license debian/copyright
 
 %changelog
-* Sun Mar 15 2026 indika-dev
-- Update to version 4.13.1
-* Mon May 13 2024 offlinehq
-- Update to version 4.4.3
-* Fri Mar 15 2024 offlinehq
-- Add Provides for tuxedo-drivers
-* Fri Mar 15 2024 offlinehq
-- Update to version 4.3.2
-* Mon Feb 05 2024 offlinehq
-- Initial Fedora build
