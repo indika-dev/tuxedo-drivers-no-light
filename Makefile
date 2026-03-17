@@ -4,10 +4,14 @@ all:
 tito:
 	tito build --rpm --test
 
+build:
+	sudo akmods --akmod tuxedo-drivers-no-light-kmod
+
 clean:
 	rm -rf tmp
 	rm -rf results_*
-	rm -f tuxedo-drivers-no-light-kmod-4.13.1-0.fc43.src.rpm
+	rm -f *.src.rpm
+	rm -f results_tuxedo-drivers-no-light
 
 unpack:
 	mkdir -p tmp && \

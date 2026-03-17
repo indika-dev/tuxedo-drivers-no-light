@@ -9,7 +9,7 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        0%{?dist}
+Release:        7%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
@@ -33,7 +33,7 @@ Tuxedo drivers as kmod
 %prep
 echo "Prepare stage -----------------------------------------------------------------------------------------------"
 %setup -q -c -T -a 0
-
+cd %{modname}-%{version}
 for kernel_version  in %{?kernel_versions} ; do
   cp -a src _kmod_build_${kernel_version%%___*}
 done
@@ -42,17 +42,17 @@ done
 echo "Build stage -----------------------------------------------------------------------------------------------"
 
 for kernel_version in %{?kernel_versions}; do
-  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} modules
+  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
 done
 
 %install
 echo "Install stage ---------------------------------------------------------------------------------------------"
 
 for kernel_version in %{?kernel_versions}; do
-  mkdir -p %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
-  install -D -m 755 _kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
-  install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/
-  chmod a+x %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}/*.ko
+  mkdir -p %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
+  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
+  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
+  chmod a+x %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/*.ko
 done
 
 # Copy configs
