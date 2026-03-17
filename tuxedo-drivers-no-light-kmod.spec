@@ -22,8 +22,8 @@ BuildRequires: kernel-devel
 BuildRequires: make
 BuildRequires: gcc
 
-Provides: tuxedo-drivers = %{version}
-Obsoletes: tuxedo-drivers < 4.0.0
+Provides: %{modname}-no-light = %{version}
+Obsoletes: %{modname}-no-light < 4.0.0
 
 %description
 Tuxedo drivers as kmod
