@@ -17,7 +17,7 @@ Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
 URL:            https://gitlab.com/tuxedocomputers/development/packages/%{modname}
 
-Source:         %{url}/-/archive/v%{version}/tuxedo-drivers-v%{version}.tar.gz
+Source0:         %{url}/-/archive/v%{version}/tuxedo-drivers-v%{version}.tar.gz
 
 BuildRequires: kmodtool
 BuildRequires: kernel-devel
@@ -35,6 +35,7 @@ Tuxedo drivers as kmod
 %prep
 echo "Prepare stage -----------------------------------------------------------------------------------------------"
 %setup -q -c -T -a 0
+tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
 cd %{modname}-%{version}
 for kernel_version  in %{?kernel_versions} ; do
   cp -a src _kmod_build_${kernel_version%%___*}
