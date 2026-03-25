@@ -9,7 +9,7 @@
 %global         debug_package           %{nil}
 %endif
 
-Name:           %{modname}-no-light-kmod
+Name:           akmod-%{modname}-no-light
 Version:        4.13.1
 Release:        1%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
@@ -24,8 +24,8 @@ BuildRequires: kernel-devel
 BuildRequires: make
 BuildRequires: gcc
 
-Provides: %{modname}-no-light = %{version}
-Obsoletes: %{modname}-no-light < 4.0.0
+Provides: %{name} = %{version}
+Obsoletes: %{name} < 4.0.0
 
 %description
 Tuxedo drivers as kmod
@@ -91,15 +91,15 @@ cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.
 
 %changelog
 
-%package common
+%package -n %{name}-common
 Summary:  Tuxedo drivers kmod common files
-Requires: %{short}-no-light-kmod >= %{version}
+Requires: %{name}-common >= %{version}
 BuildRequires: systemd-rpm-macros
 
-%description common
+%description -n %{name}-common
 Tuxedo drivers kmod common files
 
-%files common
+%files -n %{name}-common
 %{_modulesloaddir}/*.conf
 /usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 /usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
@@ -108,4 +108,4 @@ Tuxedo drivers kmod common files
 # %doc README.md
 # %license debian/copyright
 
-%changelog common
+%changelog -n %{name}-common

@@ -1,7 +1,7 @@
 all: rpm build
 	
 rpm:
-	spectool -g ${PWD}/tuxedo-drivers-no-light-kmod.spec
+	spectool -g ${PWD}/akmod-tuxedo-drivers-no-light.spec
 	fedpkg --release f43 mockbuild --enable-network
 
 build:
