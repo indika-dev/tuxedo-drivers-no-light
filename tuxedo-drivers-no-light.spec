@@ -48,12 +48,6 @@ for kernel_version in %{?kernel_versions}; do
   make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
 done
 
-# build for common
-for module in %{module_names}; do
-  echo "$module" > ${module}.conf
-  install -D -m 0644 ${module}.conf %{buildroot}%{_modulesloaddir}/${module}.conf
-done
-
 %install
 echo "Install stage ---------------------------------------------------------------------------------------------"
 

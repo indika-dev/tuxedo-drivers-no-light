@@ -7,6 +7,9 @@ rpm:
 build:
 	sudo akmods --akmod tuxedo-drivers-no-light
 
+lint:
+	rpm -q --specfile tuxedo-drivers-no-light.spec
+
 clean:
 	rm -rf tmp
 	rm -rf results_*
