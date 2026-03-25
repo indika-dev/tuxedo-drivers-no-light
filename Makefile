@@ -1,8 +1,8 @@
-all:
+all: rpm build
+	
+rpm:
+	spectool -g ${PWD}/tuxedo-drivers-no-light-kmod.spec
 	fedpkg --release f43 mockbuild --enable-network
-
-tito:
-	tito build --rpm --test
 
 build:
 	sudo akmods --akmod tuxedo-drivers-no-light-kmod
@@ -11,6 +11,7 @@ clean:
 	rm -rf tmp
 	rm -rf results_*
 	rm -f *.src.rpm
+	rm -f *.tar.gz
 	rm -f results_tuxedo-drivers-no-light
 
 unpack:

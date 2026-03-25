@@ -11,13 +11,13 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        7%{?dist}
+Release:        1%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
-URL:            https://gitlab.com/tuxedocomputers/development/packages/%{modname}
+URL:            https://github.com/tuxedocomputers/tuxedo-drivers
 
-Source0:         %{url}/-/archive/v%{version}/tuxedo-drivers-v%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
 BuildRequires: kmodtool
 BuildRequires: kernel-devel
@@ -35,8 +35,7 @@ Tuxedo drivers as kmod
 %prep
 echo "Prepare stage -----------------------------------------------------------------------------------------------"
 %setup -q -c -T -a 0
-tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
-cd %{modname}-%{version}
+cd %{modname}-%{version} || true
 for kernel_version  in %{?kernel_versions} ; do
   cp -a src _kmod_build_${kernel_version%%___*}
 done
@@ -89,12 +88,6 @@ cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.
 %{?akmod_install}
 
 %files
-/usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
-/usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
-/usr/lib/udev/hwdb.d/61-sensor-tuxedo.hwdb
-/usr/lib/udev/hwdb.d/61-keyboard-tuxedo.hwdb
-# %doc README.md
-# %license debian/copyright
 
 %changelog
 
@@ -108,5 +101,11 @@ Tuxedo drivers kmod common files
 
 %files common
 %{_modulesloaddir}/*.conf
+/usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
+/usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
+/usr/lib/udev/hwdb.d/61-sensor-tuxedo.hwdb
+/usr/lib/udev/hwdb.d/61-keyboard-tuxedo.hwdb
+# %doc README.md
+# %license debian/copyright
 
 %changelog common
