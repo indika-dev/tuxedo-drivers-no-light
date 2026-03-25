@@ -1,6 +1,6 @@
 %global         modname                 tuxedo-drivers
 %global         _sysconf_modprobe_d     %{_sysconfdir}/modprobe.d/
-%global         buildforkernels         akmod
+%define         buildforkernels         akmod
 %global         AkmodsBuildRequires     make gcc sed gawk
 %global short tuxedo-drivers
 %global module_names tuxedo_compatibility_check tuxedo_keyboard clevo_acpi clevo_wmi uniwill_wmi tuxedo_io tuxedo_nb02_nvidia_power_ctrl ite_8291 ite_8291_lb ite_8297 ite_829x tuxedo_nb05_ec tuxedo_nb05_power_profiles tuxedo_nb05_sensors tuxedo_nb05_keyboard tuxedo_nb05_kbd_backlight tuxedo_nb05_fan_control tuxedo_nb04_keyboard tuxedo_nb04_wmi_ab tuxedo_nb04_wmi_bs tuxedo_nb04_sensors tuxedo_nb04_power_profiles tuxedo_nb04_kbd_backlight stk8321 gxtp7380 tuxedo_tuxi_fan_control tuxi_acpi
@@ -9,7 +9,7 @@
 %global         debug_package           %{nil}
 %endif
 
-Name:           akmod-%{modname}-no-light
+Name:           %{modname}-no-light
 Version:        4.13.1
 Release:        1%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
@@ -30,6 +30,7 @@ Obsoletes: %{name} < 4.0.0
 %description
 Tuxedo drivers as kmod
 
+%{!?kernels:BuildRequires: buildsys-build-%{repo}-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 %{expand:%(kmodtool --target %{_target_cpu} --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} 2>/dev/null) }
 
 %prep
@@ -91,15 +92,15 @@ cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.
 
 %changelog
 
-%package -n %{name}-common
+%package kmod-common
 Summary:  Tuxedo drivers kmod common files
-Requires: %{name}-common >= %{version}
+Requires: %{name}-kmod-common >= %{version}
 BuildRequires: systemd-rpm-macros
 
-%description -n %{name}-common
+%description kmod-common
 Tuxedo drivers kmod common files
 
-%files -n %{name}-common
+%files kmod-common
 %{_modulesloaddir}/*.conf
 /usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 /usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
@@ -108,4 +109,4 @@ Tuxedo drivers kmod common files
 # %doc README.md
 # %license debian/copyright
 
-%changelog -n %{name}-common
+%changelog kmod-common

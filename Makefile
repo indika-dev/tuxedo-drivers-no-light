@@ -1,11 +1,11 @@
 all: rpm build
 	
 rpm:
-	spectool -g ${PWD}/akmod-tuxedo-drivers-no-light.spec
+	spectool -g ${PWD}/tuxedo-drivers-no-light.spec
 	fedpkg --release f43 mockbuild --enable-network
 
 build:
-	sudo akmods --akmod tuxedo-drivers-no-light-kmod
+	sudo akmods --akmod tuxedo-drivers-no-light
 
 clean:
 	rm -rf tmp
