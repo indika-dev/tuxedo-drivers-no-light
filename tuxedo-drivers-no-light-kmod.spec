@@ -37,10 +37,10 @@ Tuxedo drivers as kmod
 %prep
 echo "Prepare stage -----------------------------------------------------------------------------------------------"
 %setup -q -c -T -a 0
-cd %{modname}-%{version} || true
+
 for kernel_version  in %{?kernel_versions} ; do
   mkdir -p _kmod_build_${kernel_version%%___*}
-  cp -a src _kmod_build_${kernel_version%%___*}
+  cp -a %{modname}-%{version}/src _kmod_build_${kernel_version%%___*}
 done
 
 %build
@@ -50,7 +50,7 @@ for kernel_version in %{?kernel_versions}; do
   #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
   echo $PWD
   ls -al
-  make V=1 %{?_smp_mflags} -C ${kernel_version##*___} M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
+  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
 done
 
 %install
@@ -58,8 +58,8 @@ echo "Install stage ------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   mkdir -p %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  install -D -m 755 _kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
   chmod a+x %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/*.ko
 done
 
