@@ -40,7 +40,7 @@ echo "Prepare stage ------------------------------------------------------------
 
 for kernel_version  in %{?kernel_versions} ; do
   mkdir -p _kmod_build_${kernel_version%%___*}
-  cp -a %{modname}-%{version}/src _kmod_build_${kernel_version%%___*}
+  cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
 done
 
 %build
