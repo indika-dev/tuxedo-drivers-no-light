@@ -18,7 +18,6 @@ License:        GPL-2.0-or-later
 URL:            https://github.com/tuxedocomputers/tuxedo-drivers
 
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-Source1:        tuxedo-drivers-no-light.spec
 
 BuildRequires: kmodtool
 BuildRequires: kernel-devel
