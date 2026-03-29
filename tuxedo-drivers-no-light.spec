@@ -9,9 +9,9 @@
 %global         debug_package           %{nil}
 %endif
 
-Name:           %{modname}-no-light
+Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
@@ -38,6 +38,7 @@ echo "Prepare stage ------------------------------------------------------------
 %setup -q -c -T -a 0
 cd %{modname}-%{version} || true
 for kernel_version  in %{?kernel_versions} ; do
+  mkdir -p _kmod_build_${kernel_version%%___*}
   cp -a src _kmod_build_${kernel_version%%___*}
 done
 
@@ -52,10 +53,10 @@ done
 echo "Install stage ---------------------------------------------------------------------------------------------"
 
 for kernel_version in %{?kernel_versions}; do
-  mkdir -p %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
-  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
-  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/*.ko %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/
-  chmod a+x %{buildroot}/lib/modules/${kernel_version%%___*}/extra/%{modname}-no-light/*.ko
+  mkdir -p %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  install -D -m 755 %{modname}-%{version}/_kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  chmod a+x %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/*.ko
 done
 
 # install for common
@@ -86,15 +87,15 @@ cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.
 
 %changelog
 
-%package kmod-common
+%package common
 Summary:  Tuxedo drivers kmod common files
 Requires: %{name}-kmod-common >= %{version}
 BuildRequires: systemd-rpm-macros
 
-%description kmod-common
+%description common
 Tuxedo drivers kmod common files
 
-%files kmod-common
+%files common
 %{_modulesloaddir}/*.conf
 /usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 /usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
@@ -103,4 +104,4 @@ Tuxedo drivers kmod common files
 # %doc README.md
 # %license debian/copyright
 
-%changelog kmod-common
+%changelog common
