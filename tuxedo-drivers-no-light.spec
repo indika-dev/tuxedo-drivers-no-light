@@ -18,6 +18,7 @@ License:        GPL-2.0-or-later
 URL:            https://github.com/tuxedocomputers/tuxedo-drivers
 
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+Source1:        tuxedo-drivers-no-light.spec
 
 BuildRequires: kmodtool
 BuildRequires: kernel-devel
@@ -63,23 +64,23 @@ done
 mkdir -p %{buildroot}%{_modulesloaddir}
 for module in %{module_names}; do
     echo "$module" > ${module}.conf
-    install -D -m 0644 ${module}.conf %{buildroot}%{_modulesloaddir}/${module}.conf
+    install -D -m 0644 ${module}.conf %{buildroot}%{_libdir}/modules-load.d/${module}.conf
 done
 
 
 # Copy configs
-mkdir -p %{buildroot}/usr/lib/modprobe.d/
+mkdir -p %{buildroot}%{_libdir}/modules-load.d/
 
 # Copy udev rules
-mkdir -p %{buildroot}/usr/lib/udev/rules.d/
+mkdir -p %{buildroot}%{_libdir}/udev/rules.d/
 ls -al
-cp %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}/usr/lib/udev/rules.d/
-cp %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}/usr/lib/udev/rules.d/
+cp %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}%{_libdir}/udev/rules.d/
+cp %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}%{_libdir}/udev/rules.d/
 
 # Copy udev hwdb
 mkdir -p %{buildroot}/usr/lib/udev/hwdb.d/
-cp %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.d/
-cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}/usr/lib/udev/hwdb.d/
+cp %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{_libdir}/udev/hwdb.d/
+cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{_libdir}/udev/hwdb.d/
 
 %{?akmod_install}
 
@@ -97,10 +98,10 @@ Tuxedo drivers kmod common files
 
 %files common
 %{_modulesloaddir}/*.conf
-/usr/lib/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
-/usr/lib/udev/rules.d/99-z-tuxedo-systemd-fix.rules
-/usr/lib/udev/hwdb.d/61-sensor-tuxedo.hwdb
-/usr/lib/udev/hwdb.d/61-keyboard-tuxedo.hwdb
+%{_libdir}/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
+%{_libdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
+%{_libdir}/udev/hwdb.d/61-sensor-tuxedo.hwdb
+%{_libdir}/udev/hwdb.d/61-keyboard-tuxedo.hwdb
 # %doc README.md
 # %license debian/copyright
 
