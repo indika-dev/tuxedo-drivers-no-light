@@ -12,7 +12,7 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
@@ -66,7 +66,6 @@ echo "Install stage ------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   mkdir -p %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-
   find _kmod_build_${kernel_version%%___*} -type f -name "*.ko" -exec install -D -m 755 {} %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/ \;
 done
 
@@ -85,7 +84,6 @@ cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
 
 # Copy udev rules
 mkdir -p %{buildroot}%{__libdir}/udev/rules.d/
-ls -al
 cp %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}%{__libdir}/udev/rules.d/
 cp %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}%{__libdir}/udev/rules.d/
 
