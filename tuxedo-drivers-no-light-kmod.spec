@@ -44,6 +44,7 @@ for kernel_version  in %{?kernel_versions} ; do
   tar xzf %{SOURCE0} --strip-components=1 -C _kmod_build_${kernel_version%%___*}
   # cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
   rm -rf %{modname}-%{version}
+  mkdir -p %{modname}-%{version}
   tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
   ls -alR
 done
