@@ -48,9 +48,10 @@ echo "Build stage --------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
-  echo $PWD
-  ls -al
-  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
+  #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
+  cd _kmod_build_${kernel_version%%___*}
+  make
+  cd ..
 done
 
 %install
@@ -72,7 +73,9 @@ done
 
 
 # Copy configs
-mkdir -p %{buildroot}%{__libdir}/modules-load.d/
+mkdir -p %{buildroot}/etc/modprobe.d/
+
+cp tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
 
 # Copy udev rules
 mkdir -p %{buildroot}%{__libdir}/udev/rules.d/
@@ -100,7 +103,7 @@ BuildRequires: systemd-rpm-macros
 Tuxedo drivers kmod common files
 
 %files common
-%{__libdir}/modules-load.d/*.conf
+/etc/modprobe.d/tuxedo_keyboard.conf
 %{__libdir}/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 %{__libdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
 %{__libdir}/udev/hwdb.d/61-sensor-tuxedo.hwdb
