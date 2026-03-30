@@ -39,9 +39,12 @@ echo "Prepare stage ------------------------------------------------------------
 %setup -q -c -T -a 0
 
 for kernel_version  in %{?kernel_versions} ; do
+  rm -rf _kmod_build_${kernel_version%%___*}
   mkdir -p _kmod_build_${kernel_version%%___*}
   tar xzf %{SOURCE0} --strip-components=1 -C _kmod_build_${kernel_version%%___*}
   # cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
+  rm -rf %{modname}-%{version}
+  tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
   ls -alR
 done
 
@@ -63,7 +66,7 @@ echo "Install stage ------------------------------------------------------------
 for kernel_version in %{?kernel_versions}; do
   mkdir -p %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
   install -D -m 755 _kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
+  # install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
   chmod a+x %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/*.ko
 done
 
