@@ -40,8 +40,8 @@ echo "Prepare stage ------------------------------------------------------------
 
 for kernel_version  in %{?kernel_versions} ; do
   mkdir -p _kmod_build_${kernel_version%%___*}
-  tar xzf v%{version}.tar.gz --strip-components=1 -C _kmod_build_${kernel_version%%___*}
-  # cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
+  cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
+  ls -alR
 done
 
 %build
