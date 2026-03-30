@@ -65,11 +65,11 @@ for kernel_version in %{?kernel_versions}; do
 done
 
 # install for common
-mkdir -p %{buildroot}%{_modulesloaddir}
-for module in %{module_names}; do
-    echo "$module" > ${module}.conf
-    install -D -m 0644 ${module}.conf %{buildroot}%{__libdir}/modules-load.d/${module}.conf
-done
+# mkdir -p %{buildroot}%{_modulesloaddir}
+# for module in %{module_names}; do
+#    echo "$module" > ${module}.conf
+#    install -D -m 0644 ${module}.conf %{buildroot}%{__libdir}/modules-load.d/${module}.conf
+# done
 
 
 # Copy configs
