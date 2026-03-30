@@ -39,14 +39,14 @@ echo "Prepare stage ------------------------------------------------------------
 %setup -q -c -T -a 0
 
 for kernel_version  in %{?kernel_versions} ; do
+  # prepare kernel build
   rm -rf _kmod_build_${kernel_version%%___*}
   mkdir -p _kmod_build_${kernel_version%%___*}
   tar xzf %{SOURCE0} --strip-components=1 -C _kmod_build_${kernel_version%%___*}
-  # cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
+  # prepare common installation
   rm -rf %{modname}-%{version}
   mkdir -p %{modname}-%{version}
   tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
-  ls -alR
 done
 
 %build
@@ -54,11 +54,11 @@ echo "Build stage --------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
-  #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules 
-  cd _kmod_build_${kernel_version%%___*}
-  ls -alR
-  make
-  cd ..
+  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules 
+  # cd _kmod_build_${kernel_version%%___*}
+  # ls -alR
+  # make
+  # cd ..
 done
 
 %install
@@ -66,9 +66,8 @@ echo "Install stage ------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   mkdir -p %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  install -D -m 755 _kmod_build_${kernel_version%%___*}/**/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  # install -D -m 755 _kmod_build_${kernel_version%%___*}/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/
-  chmod a+x %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/*.ko
+
+  find _kmod_build_${kernel_version%%___*} -type f -name "*.ko" -exec install -D -m 755 {} %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/ \;
 done
 
 # install for common
