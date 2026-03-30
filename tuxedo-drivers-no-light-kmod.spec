@@ -75,7 +75,7 @@ done
 # Copy configs
 mkdir -p %{buildroot}/etc/modprobe.d/
 
-cp tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
+cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
 
 # Copy udev rules
 mkdir -p %{buildroot}%{__libdir}/udev/rules.d/
