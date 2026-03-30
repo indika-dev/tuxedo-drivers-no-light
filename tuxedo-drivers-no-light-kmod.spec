@@ -40,7 +40,8 @@ echo "Prepare stage ------------------------------------------------------------
 
 for kernel_version  in %{?kernel_versions} ; do
   mkdir -p _kmod_build_${kernel_version%%___*}
-  cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
+  tar xzf v%{version}.tar.gz --strip-components=1 -C _kmod_build_${kernel_version%%___*}
+  # cp -a %{modname}-%{version} _kmod_build_${kernel_version%%___*}
 done
 
 %build
@@ -48,7 +49,7 @@ echo "Build stage --------------------------------------------------------------
 
 for kernel_version in %{?kernel_versions}; do
   #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
-  #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
+  #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules 
   cd _kmod_build_${kernel_version%%___*}
   ls -alR
   make
