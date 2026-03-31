@@ -3,8 +3,6 @@
 %define         buildforkernels         akmod
 %define        __libdir  /usr/lib
 %global         AkmodsBuildRequires     make gcc sed gawk
-%global short tuxedo-drivers
-%global module_names tuxedo_compatibility_check tuxedo_keyboard clevo_acpi clevo_wmi uniwill_wmi tuxedo_io tuxedo_nb02_nvidia_power_ctrl ite_8291 ite_8291_lb ite_8297 ite_829x tuxedo_nb05_ec tuxedo_nb05_power_profiles tuxedo_nb05_sensors tuxedo_nb05_keyboard tuxedo_nb05_kbd_backlight tuxedo_nb05_fan_control tuxedo_nb04_keyboard tuxedo_nb04_wmi_ab tuxedo_nb04_wmi_bs tuxedo_nb04_sensors tuxedo_nb04_power_profiles tuxedo_nb04_kbd_backlight stk8321 gxtp7380 tuxedo_tuxi_fan_control tuxi_acpi
 
 %if 0%{?fedora}
 %global         debug_package           %{nil}
@@ -12,7 +10,7 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
@@ -53,12 +51,7 @@ done
 echo "Build stage -----------------------------------------------------------------------------------------------"
 
 for kernel_version in %{?kernel_versions}; do
-  #  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/%{modname}-%{version}/_kmod_build_${kernel_version%%___*} modules
-  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules 
-  # cd _kmod_build_${kernel_version%%___*}
-  # ls -alR
-  # make
-  # cd ..
+  make V=1 %{?_smp_mflags} -C /lib/modules/${kernel_version%%___*}/build M=${PWD}/_kmod_build_${kernel_version%%___*} VERSION=v%{version} modules
 done
 
 %install
@@ -69,14 +62,6 @@ for kernel_version in %{?kernel_versions}; do
   find _kmod_build_${kernel_version%%___*} -type f -name "*.ko" -exec install -D -m 755 {} %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}/ \;
 done
 
-# install for common
-# mkdir -p %{buildroot}%{_modulesloaddir}
-# for module in %{module_names}; do
-#    echo "$module" > ${module}.conf
-#    install -D -m 0644 ${module}.conf %{buildroot}%{__libdir}/modules-load.d/${module}.conf
-# done
-
-
 # Copy configs
 mkdir -p %{buildroot}/etc/modprobe.d/
 
@@ -84,13 +69,13 @@ cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
 
 # Copy udev rules
 mkdir -p %{buildroot}%{__libdir}/udev/rules.d/
-cp %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}%{__libdir}/udev/rules.d/
-cp %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}%{__libdir}/udev/rules.d/
+install -D -m 644 %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules %{buildroot}%{__libdir}/udev/rules.d/
+install -D -m 644 %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}%{__libdir}/udev/rules.d/
 
 # Copy udev hwdb
 mkdir -p %{buildroot}/usr/lib/udev/hwdb.d/
-cp %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
-cp %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
+install -D -m 644 %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
+install -D -m 644 %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 
 %{?akmod_install}
 
@@ -107,7 +92,7 @@ BuildRequires: systemd-rpm-macros
 Tuxedo drivers kmod common files
 
 %files common
-/etc/modprobe.d/tuxedo_keyboard.conf
+%config(noreplace) /etc/modprobe.d/tuxedo_keyboard.conf
 %{__libdir}/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 %{__libdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
 %{__libdir}/udev/hwdb.d/61-sensor-tuxedo.hwdb
