@@ -24,6 +24,7 @@ BuildRequires: make
 BuildRequires: gcc
 
 Provides: %{name} = %{version}
+Provides: %{modname} = %{version}
 Obsoletes: %{name} < 4.0.0
 
 %description
@@ -85,7 +86,6 @@ install -D -m 644 %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__
 
 %package common
 Summary:  Tuxedo drivers kmod common files
-Requires: %{name}-kmod-common >= %{version}
 BuildRequires: systemd-rpm-macros
 
 %description common
