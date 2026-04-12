@@ -10,7 +10,7 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
