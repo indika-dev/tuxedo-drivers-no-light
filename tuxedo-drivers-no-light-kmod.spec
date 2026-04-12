@@ -23,9 +23,27 @@ BuildRequires: kernel-devel
 BuildRequires: make
 BuildRequires: gcc
 
-Provides: %{name} = %{version}
-Provides: %{modname} = %{version}
-Obsoletes: %{name} < 4.0.0
+# Recommends:     udev-hid-bpf
+
+# BuildArch:      noarch
+
+Provides:       %{name} = %{version}
+Provides:       tuxedo-cc-wmi = 4.0.0-1
+Provides:       tuxedo-keyboard = 4.0.0-1
+# Provides:       tuxedo-keyboard-dkms = 4.0.0-1
+Provides:       tuxedo-keyboard-ite = 4.0.0-1
+Provides:       tuxedo-touchpad-fix = 4.0.0-1
+# Provides:       tuxedo-wmi-dkms = 4.0.0-1
+Provides:       tuxedo-xp-xc-airplane-mode-fix = 4.0.0-1
+Provides:       tuxedo-xp-xc-touchpad-key-fix = 4.0.0-1
+Obsoletes:      tuxedo-cc-wmi < 4.0.0-1
+Obsoletes:      tuxedo-keyboard < 4.0.0-1
+# Obsoletes:      tuxedo-keyboard-dkms < 4.0.0-1
+Obsoletes:      tuxedo-keyboard-ite < 4.0.0-1
+Obsoletes:      tuxedo-touchpad-fix < 4.0.0-1
+# Obsoletes:      tuxedo-wmi-dkms < 4.0.0-1
+Obsoletes:      tuxedo-xp-xc-airplane-mode-fix < 4.0.0-1
+Obsoletes:      tuxedo-xp-xc-touchpad-key-fix < 4.0.0-1
 
 %description
 Tuxedo drivers as kmod
@@ -66,7 +84,14 @@ done
 # Copy configs
 mkdir -p %{buildroot}/etc/modprobe.d/
 
-cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}/etc/modprobe.d/
+cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}%{_sysconfdir}/modprobe.d/
+
+cat >%{buildroot}%{_sysconfdir}/etc/modules-load.d/99-tuxedo.conf <<EOF
+tuxedo_keyboard
+tuxedo_io
+clevo_acpi
+clevo_wmi
+EOF
 
 # Copy udev rules
 mkdir -p %{buildroot}%{__libdir}/udev/rules.d/
@@ -74,7 +99,7 @@ install -D -m 644 %{modname}-%{version}/99-infinityflex-touchpanel-toggle.rules 
 install -D -m 644 %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroot}%{__libdir}/udev/rules.d/
 
 # Copy udev hwdb
-mkdir -p %{buildroot}/usr/lib/udev/hwdb.d/
+mkdir -p %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 
@@ -92,7 +117,8 @@ BuildRequires: systemd-rpm-macros
 Tuxedo drivers kmod common files
 
 %files common
-%config(noreplace) /etc/modprobe.d/tuxedo_keyboard.conf
+%config(noreplace) %{_sysconfdir}/modprobe.d/tuxedo_keyboard.conf
+%config(noreplace) %{_sysconfdir}/modules-load.d/99-tuxedo.conf
 %{__libdir}/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 %{__libdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
 %{__libdir}/udev/hwdb.d/61-sensor-tuxedo.hwdb
