@@ -23,31 +23,25 @@ BuildRequires: kernel-devel
 BuildRequires: make
 BuildRequires: gcc
 
-# Recommends:     udev-hid-bpf
-
-# BuildArch:      noarch
-
 Provides:       %{name} = %{version}
 Provides:       tuxedo-cc-wmi = 4.0.0-1
 Provides:       tuxedo-keyboard = 4.0.0-1
-# Provides:       tuxedo-keyboard-dkms = 4.0.0-1
 Provides:       tuxedo-keyboard-kmod = 4.0.0-1
 Provides:       tuxedo-keyboard-ite = 4.0.0-1
 Provides:       tuxedo-touchpad-fix = 4.0.0-1
-# Provides:       tuxedo-wmi-dkms = 4.0.0-1
 Provides:       tuxedo-wmi-kmod = 4.0.0-1
 Provides:       tuxedo-xp-xc-airplane-mode-fix = 4.0.0-1
 Provides:       tuxedo-xp-xc-touchpad-key-fix = 4.0.0-1
 Obsoletes:      tuxedo-cc-wmi < 4.0.0-1
 Obsoletes:      tuxedo-keyboard < 4.0.0-1
-# Obsoletes:      tuxedo-keyboard-dkms < 4.0.0-1
 Obsoletes:      tuxedo-keyboard-kmod < 4.0.0-1
 Obsoletes:      tuxedo-keyboard-ite < 4.0.0-1
 Obsoletes:      tuxedo-touchpad-fix < 4.0.0-1
-# Obsoletes:      tuxedo-wmi-dkms < 4.0.0-1
 Obsoletes:      tuxedo-wmi-kmod < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-airplane-mode-fix < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-touchpad-key-fix < 4.0.0-1
+Obsoletes:      tuxedo-keyboard-dkms <= 4.0.0-1
+Obsoletes:      tuxedo-wmi-dkms <= 4.0.0-1
 
 %description
 Tuxedo drivers as kmod
@@ -65,9 +59,10 @@ for kernel_version  in %{?kernel_versions} ; do
   mkdir -p _kmod_build_${kernel_version%%___*}
   tar xzf %{SOURCE0} --strip-components=1 -C _kmod_build_${kernel_version%%___*}
   # prepare common installation
-  rm -rf %{modname}-%{version}
-  mkdir -p %{modname}-%{version}
-  tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
+  if [ ! -d "%{modname}-%{version}" ]; then
+    mkdir -p %{modname}-%{version}
+    tar xzf %{SOURCE0} --strip-components=1 -C %{modname}-%{version}
+  fi
 done
 
 %build
