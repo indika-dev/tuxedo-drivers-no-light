@@ -40,8 +40,13 @@ Obsoletes:      tuxedo-touchpad-fix < 4.0.0-1
 Obsoletes:      tuxedo-wmi-kmod < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-airplane-mode-fix < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-touchpad-key-fix < 4.0.0-1
+# does this package replace dkms drivers or will it fail the installation?
 Obsoletes:      tuxedo-keyboard-dkms <= 4.0.0-1
 Obsoletes:      tuxedo-wmi-dkms <= 4.0.0-1
+Conflicts:      tuxedo-keyboard-dkms <= 4.0.0-1
+Conflicts:      tuxedo-wmi-dkms <= 4.0.0-1
+Conflicts:      tuxedo-keyboard-dkms > 4.0.0-1
+Conflicts:      tuxedo-wmi-dkms > 4.0.0-1
 
 %description
 Tuxedo drivers as kmod
@@ -81,11 +86,10 @@ for kernel_version in %{?kernel_versions}; do
 done
 
 # Copy configs
-mkdir -p %{buildroot}/etc/modprobe.d/
-
+mkdir -p %{buildroot}%{_sysconfdir}/modprobe.d/
 cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}%{_sysconfdir}/modprobe.d/
 
-cat >%{buildroot}%{_sysconfdir}/etc/modules-load.d/99-tuxedo.conf <<EOF
+cat >%{buildroot}%{_sysconfdir}/modules-load.d/99-tuxedo.conf <<EOF
 tuxedo_keyboard
 tuxedo_io
 clevo_acpi
