@@ -40,9 +40,6 @@ Obsoletes:      tuxedo-touchpad-fix < 4.0.0-1
 Obsoletes:      tuxedo-wmi-kmod < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-airplane-mode-fix < 4.0.0-1
 Obsoletes:      tuxedo-xp-xc-touchpad-key-fix < 4.0.0-1
-# does this package replace dkms drivers or will it fail the installation?
-Obsoletes:      tuxedo-keyboard-dkms <= 4.0.0-1
-Obsoletes:      tuxedo-wmi-dkms <= 4.0.0-1
 Conflicts:      tuxedo-keyboard-dkms <= 4.0.0-1
 Conflicts:      tuxedo-wmi-dkms <= 4.0.0-1
 Conflicts:      tuxedo-keyboard-dkms > 4.0.0-1
