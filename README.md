@@ -5,7 +5,7 @@ It should be possible to install Tuxedo Control Center on base of this driver. B
 
 ## Installation
 
-This can be installed on Fedora distros by using the following copr:
+This can be installed on Fedora distros by using this [COPR](https://copr.fedorainfracloud.org/coprs/stefan-maassen/akmod-tuxedo-drivers-no-light/)
 
 ## Further Documentation
 
