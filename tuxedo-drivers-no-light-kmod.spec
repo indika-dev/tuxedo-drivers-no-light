@@ -86,6 +86,7 @@ done
 mkdir -p %{buildroot}%{_sysconfdir}/modprobe.d/
 cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}%{_sysconfdir}/modprobe.d/
 
+mkdir -p %{buildroot}%{_sysconfdir}/modules-load.d/
 cat >%{buildroot}%{_sysconfdir}/modules-load.d/99-tuxedo.conf <<EOF
 tuxedo_keyboard
 tuxedo_io
