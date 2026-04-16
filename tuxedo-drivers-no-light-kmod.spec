@@ -10,7 +10,7 @@
 
 Name:           %{modname}-no-light-kmod
 Version:        4.13.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Tuxedo drivers not enabling light on touchpad as akmod
 Group:          System Environment/Kernel
 License:        GPL-2.0-or-later
@@ -104,6 +104,14 @@ mkdir -p %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 
+# backport from 4.22.1
+mkdir -p %{buildroot}%{__libdir}/modprobe.d/
+cat >%{buildroot}%{__libdir}/modprobe.d/tuxedo-drivers-backlist-upstream-conflicts.conf <<EOF
+# This is a temporary blacklist until uniwill_laptop has reached feature parity
+# with tuxedo_keyboard for NB02 devices and can replace it.
+blacklist uniwill_laptop
+EOF
+
 %{?akmod_install}
 
 %files
@@ -120,6 +128,7 @@ Tuxedo drivers kmod common files
 %files common
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuxedo_keyboard.conf
 %config(noreplace) %{_sysconfdir}/modules-load.d/99-tuxedo.conf
+%{__libdir}/modprobe.d/tuxedo-drivers-backlist-upstream-conflicts.conf
 %{__libdir}/udev/rules.d/99-infinityflex-touchpanel-toggle.rules
 %{__libdir}/udev/rules.d/99-z-tuxedo-systemd-fix.rules
 %{__libdir}/udev/hwdb.d/61-sensor-tuxedo.hwdb
