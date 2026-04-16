@@ -44,6 +44,8 @@ Conflicts:      tuxedo-keyboard-dkms <= 4.0.0-1
 Conflicts:      tuxedo-wmi-dkms <= 4.0.0-1
 Conflicts:      tuxedo-keyboard-dkms > 4.0.0-1
 Conflicts:      tuxedo-wmi-dkms > 4.0.0-1
+Conflicts:      tuxedo-drivers-kmod <= 4.0.0-1
+Conflicts:      tuxedo-drivers-kmod > 4.0.0-1
 
 %description
 Tuxedo drivers as kmod
