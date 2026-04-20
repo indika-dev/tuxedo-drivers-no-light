@@ -86,7 +86,13 @@ done
 
 # Copy configs
 mkdir -p %{buildroot}%{_sysconfdir}/modprobe.d/
-cp %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}%{_sysconfdir}/modprobe.d/
+install -D -m 644 %{modname}-%{version}/tuxedo_keyboard.conf %{buildroot}%{_sysconfdir}/modprobe.d/
+# backport from 4.22.1
+cat >%{buildroot}%{_sysconfdir}/modprobe.d/tuxedo-drivers-backlist-upstream-conflicts.conf <<EOF
+# This is a temporary blacklist until uniwill_laptop has reached feature parity
+# with tuxedo_keyboard for NB02 devices and can replace it.
+blacklist uniwill_laptop
+EOF
 
 mkdir -p %{buildroot}%{_sysconfdir}/modules-load.d/
 cat >%{buildroot}%{_sysconfdir}/modules-load.d/99-tuxedo.conf <<EOF
@@ -105,14 +111,6 @@ install -D -m 644 %{modname}-%{version}/99-z-tuxedo-systemd-fix.rules %{buildroo
 mkdir -p %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-sensor-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
 install -D -m 644 %{modname}-%{version}/61-keyboard-tuxedo.hwdb %{buildroot}%{__libdir}/udev/hwdb.d/
-
-# backport from 4.22.1
-mkdir -p %{buildroot}%{__libdir}/modprobe.d/
-cat >%{buildroot}%{__libdir}/modprobe.d/tuxedo-drivers-backlist-upstream-conflicts.conf <<EOF
-# This is a temporary blacklist until uniwill_laptop has reached feature parity
-# with tuxedo_keyboard for NB02 devices and can replace it.
-blacklist uniwill_laptop
-EOF
 
 %{?akmod_install}
 
